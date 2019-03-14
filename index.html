@@ -35,7 +35,7 @@
     var ciudades = [] //arreglo de ciudades    
     function Calcular(){
       //var strConexiones= "AB5,BC4,CD8,DC8,DE6,AD5,CE2,EB3,AE7";  //string de rutas
-      var strConexiones= document.getElementById("rutas").value;  //string de rutas      
+      var strConexiones= document.getElementById("rutas").value.trim();  //string de rutas      
       //creamos nuestro vector de conexiones donde cada conexion es una objecto con una ciudad inidio una ciudad fin y la distancia entre estas.
       conexiones=strConexiones.split(',').map(function(obj) {
         return {
