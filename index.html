@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+      <input type="text"  id="rutas"placeholder="Ingrese rutas"/>
+      <br/>
+      <button onclick="Calcular()">Calcular Resultados</button>
+      <br />
+      <label>Respuesta 1:<label><input id="1" type="text" readonly/>
+      <br/>        
+      <label>Respuesta 2:<label><input id="2" type="text" readonly/>
+      <br/>        
+      <label>Respuesta 3:<label><input id="3" type="text" readonly/>
+      <br/>        
+      <label>Respuesta 4:<label><input id="4" type="text" readonly/>
+      <br/>        
+      <label>Respuesta 5:<label><input id="5" type="text" readonly/>
+      <br/>        
+      <label>Respuesta 6:<label><input id="6" type="text" readonly/>
+      <br/>        
+      <label>Respuesta 7:<label><input id="7" type="text" readonly/>
+      <br/>        
+      <label>Respuesta 8:<label><input id="8" type="text" readonly/>
+      <br/>        
+      <label>Respuesta 9:<label><input id="9" type="text" readonly/>
+      <br/>        
+      <label>Respuesta 10:<label><input id="10" type="text" readonly/>
+      
+  </body>
+  <script type="text/javascript">
+    conexiones=[];
+    var ciudades = [] //arreglo de ciudades    
+    function Calcular(){
+      //var strConexiones= "AB5,BC4,CD8,DC8,DE6,AD5,CE2,EB3,AE7";  //string de rutas
+      var strConexiones= document.getElementById("rutas").value;  //string de rutas      
+      //creamos nuestro vector de conexiones donde cada conexion es una objecto con una ciudad inidio una ciudad fin y la distancia entre estas.
+      conexiones=strConexiones.split(',').map(function(obj) {
+        return {
+          inicio: obj[0],
+          fin: obj[1],
+          peso: obj[2],
+        }
+      });
+      //insertamos datos a nuestro vector de ciudades
+      conexiones.map(node => {
+        if (ciudades.indexOf(node.inicio) == -1){
+          ciudades.push(node.inicio)
+        }
+        if (ciudades.indexOf(node.fin) == -1){
+          ciudades.push(node.fin)
+        }
+      });
+      document.getElementById("1").value=calcularDistancia("A-B-C".split('-'));
+      document.getElementById("2").value=calcularDistancia("A-D".split('-'));
+      document.getElementById("3").value=calcularDistancia("A-D-C".split('-'));
+      document.getElementById("4").value=calcularDistancia("A-E-B-C-D".split('-'));
+      document.getElementById("5").value=calcularDistancia("A-E-D".split('-'));
+
+      document.getElementById("6").value=viajesDisponiblesMenoresN('C', 'C', 3);
+      document.getElementById("7").value=viajesIgualesN('A', 'C', 4);
+      document.getElementById("8").value=rutaMasCorta('A', 'C');
+      document.getElementById("9").value=rutaMasCorta('B', 'B');
+      document.getElementById("10").value=viajesConMaximaDistancia('C', 'C', 30);           
+    }
+        
+    // funcion calcularDistancia calcula la distancia de una ruta dada recive como entrada un arreglo de  ciudades
+    function calcularDistancia(ruta) {
+      let distancia = 0
+      //iteramos las ciudades y calculamos la distania entre la primera y la segunda y luego calculamos entre la segunda y tercera y asi sucecivamente
+      for (let index = 0; index < ruta.length - 1; index++) {
+        const inicio = ruta[index]
+        const fin = ruta[index + 1]
+        const camino= conexiones.filter(x=>x.inicio==inicio && x.fin==fin);
+        //si no existe camino imprimimos no such rout si existe acumulamos la distancia en nuestra variable distancia
+        if (camino.length==0) {
+          distancia = 'NO SUCH ROUTE'
+          break
+        } else {
+          distancia += parseInt(camino[0].peso)
+        }
+      }
+      return distancia
+    }
+    //funcion viajesDisponiblesMenoresN calcula los viajes posibles con paradas menor a N
+    function viajesDisponiblesMenoresN(inicio, fin, stops) {
+      return this.contarViajes(
+        [],
+        inicio,
+        fin,
+        stops + 1,
+        (trip, tope) => trip.length < tope && trip.length > 1
+      )
+    }
+    //funcion viajesDisponiblesMenoresN calcula los viajes posibles con paradas igual a N
+    function viajesIgualesN(inicio, fin, stops) {
+      return this.contarViajes(
+        [],
+        inicio,
+        fin,
+        stops,
+        (trip, tope) => trip.length === tope
+      )
+    }
+    // declaramos nuestra funcion recursiva en la que calculamos los viajes
+    function contarViajes(trip, origen, final, tope, comparador) {            
+      const arrRuta = [...trip, origen]      
+      if (comparador(trip, tope) && origen === final) {
+        //si nuestras parados son mayores a cero y menos a el tope y nuestro origen es gual a nuestro final entonces tenemos una ruta ue cumple y retronamos 1
+        return 1
+      } else if (trip.length >= tope) {
+        //si nuestra ruta tiene mas paradas que nuestro tope esta ruta no es valida asi que retornamos cero para sumar a nuestro total
+        return 0
+      } else {
+        //si nuestra ruta es menor al tope pero nuestro origen no es igual a el final enconces llamamos a nuestra funcion recursiva para calcular las nuevas rutas parciales
+        return [...conexiones]
+          .filter(node => node.inicio === origen)
+          .reduce(
+            (sum, node) =>
+              sum + this.contarViajes(arrRuta, node.fin, final, tope, comparador),
+            0
+          )
+      }
+    }    
+    //funcion rutaMasCorta calcula la ruta mas corta 
+    function rutaMasCorta(inicio, fin) {
+      var arrayFinal=[];
+      //en este vector obtenemos la distancia de todas las posibles rutas desde el inicio hasta el fin
+      var array=conexiones.filter(parada => parada.inicio  === inicio)
+          .map(parada => parada.peso + this.dijkstra(parada.fin, fin));      
+      //nuestro algoritmo de dijkstra nos devuelve los valores de las rutas en string asi que los iteramos y los sumamos con ayuda de la funcion add()
+      array.forEach(function(element) {
+        arrayFinal.push(parseInt(add(element)));
+      });
+      //retornamos el valor mas pequeño de nuestras distancias
+      return Math.min(...arrayFinal);
+    }
+    //funcion dijkstra en esta funcion implementamos el algoritmo de dijkstra para calcular la ruta mas corta 
+    function dijkstra(source, goal) {
+      const dist = {}
+      const prev = {}
+      let queue = []
+      ciudades.map(vertex => {
+        dist[vertex] = Infinity
+        prev[vertex] = null
+        queue.push(vertex)
+      })
+      dist[source] = 0
+      while (queue.length > 0) {
+        let tempVal = Infinity
+        let vertex = null
+        for (let index = 0; index < queue.length; index++) {
+          if (dist[queue[index]] < tempVal) {
+            vertex = queue[index]
+            tempVal = dist[queue[index]]
+          }
+        }
+        if (vertex === goal) {
+          break
+        }        
+        queue = queue.filter(function(item) {
+            return item !== vertex
+        });
+        conexiones.filter(node => node.inicio === vertex).map(node => {
+          const alt = dist[vertex] + node.peso
+          if (alt < dist[node.fin]) {
+            dist[node.fin] = alt
+            prev[node.fin] = vertex
+          }
+        })
+      }
+      return dist[goal]
+    }
+    //esta funcion add recive un string de characteres tipo number y retorna la suma de estos characteres
+    function add(string) {
+        string = string.split('');                 
+        var sum = 0;                               
+        for (var i = 0; i < string.length; i++) {  
+            sum += parseInt(string[i],10);         
+        }
+        return sum;                                
+    }
+    function medirRutas(trip, inicio, final, distanciaPermitida) {
+      const arrRuta = [...trip, inicio]
+      const distanciaCalculada = calcularDistancia(arrRuta)
+      if (
+        distanciaCalculada < distanciaPermitida &&
+        inicio === final &&
+        arrRuta.length > 1
+      ) {
+        //si la distancia es menor a la permitida y si nuestro inicio es igual al fin y nuestro arreglo de rutas es mayor a 1 retornamos 1 y llamamos a nuestra funcion recursiva otra vez
+        return (
+          1 +
+          [...conexiones]
+            .filter(node => node.inicio === inicio)
+            .reduce(
+              (sum, node) =>
+                sum + this.medirRutas(arrRuta, node.fin, final, distanciaPermitida),
+              0
+            )
+        )
+      } else if (distanciaCalculada >= distanciaPermitida) {
+        //si la distania calulada es mayor a la permitida descartamos esa ruta
+        return 0
+      } else {
+        //si el inicio no es igual  a el final o nuestro vector de rutas es menor o igual a 1 seguimos calculando llamando anuestra funcion recursiva
+        return [...conexiones]
+          .filter(node => node.inicio === inicio)
+          .reduce(
+            (sum, node) =>
+              sum + this.medirRutas(arrRuta, node.fin, final, distanciaPermitida),
+            0
+          )
+      }
+    }
+    //esta funcion calcula el numeros de viajes pero con una distancia menor a un valor
+    function viajesConMaximaDistancia(inicio, fin, distancia) {
+      return this.medirRutas([], inicio, fin, distancia)
+    }
+
+  </script>
+</html>
