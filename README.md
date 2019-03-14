@@ -4,6 +4,6 @@
 
 
 <h2>Resumen</h2>
-<p>La aplicacion web reciev un parametro de entrada con el sigueinte formato: AB5,BC4,CD8,DC8,DE6,AD5,CE2,EB3,AE7 ;este son las rutas entre las ciudades.
- -la aplicacion calcula la distancia entre dos ciudades, los viajes disponibles menores a una cantidad de ciudades dado,  calcula la ruta mas corta entre dos ciudades y  calcula los viajes con una distancia maxima dada.
+<p>La aplicacion web recive un parametro de entrada con el siguiente formato: AB5,BC4,CD8,DC8,DE6,AD5,CE2,EB3,AE7 ;estas son las rutas entre las ciudades.
+ -la aplicacion calcula la distancia entre dos ciudades, los viajes disponibles menores o iguales a una cantidad de ciudades dada,  calcula la ruta mas corta entre dos ciudades y  calcula los viajes con una distancia maxima dada.
 </p>
