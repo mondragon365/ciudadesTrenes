@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
@@ -86,6 +86,7 @@
     }
     //funcion viajesDisponiblesMenoresN calcula los viajes posibles con paradas menor a N
     function viajesDisponiblesMenoresN(inicio, fin, stops) {
+      debugger
       return this.contarViajes(
         [],
         inicio,
@@ -126,16 +127,22 @@
     }    
     //funcion rutaMasCorta calcula la ruta mas corta 
     function rutaMasCorta(inicio, fin) {
-      var arrayFinal=[];
-      //en este vector obtenemos la distancia de todas las posibles rutas desde el inicio hasta el fin
-      var array=conexiones.filter(parada => parada.inicio  === inicio)
-          .map(parada => parada.peso + this.dijkstra(parada.fin, fin));      
-      //nuestro algoritmo de dijkstra nos devuelve los valores de las rutas en string asi que los iteramos y los sumamos con ayuda de la funcion add()
-      array.forEach(function(element) {
-        arrayFinal.push(parseInt(add(element)));
-      });
-      //retornamos el valor mas pequeño de nuestras distancias
-      return Math.min(...arrayFinal);
+      if(viajesDisponiblesMenoresN(inicio, fin, conexiones.length)>0) {
+        var arrayFinal=[];
+        //en este vector obtenemos la distancia de todas las posibles rutas desde el inicio hasta el fin
+        var array=conexiones.filter(parada => parada.inicio  === inicio)
+            .map(parada => parada.peso + this.dijkstra(parada.fin, fin));      
+        //nuestro algoritmo de dijkstra nos devuelve los valores de las rutas en string asi que los iteramos y los sumamos con ayuda de la funcion add()
+        array.forEach(function(element) {
+          arrayFinal.push(parseInt(add(element)));
+        });
+        //retornamos el valor mas pequeño de nuestras distancias
+        return Math.min(...arrayFinal);
+      }
+      else{
+        return "NO SUCH ROUTE";
+      }
+      
     }
     //funcion dijkstra en esta funcion implementamos el algoritmo de dijkstra para calcular la ruta mas corta 
     function dijkstra(source, goal) {
